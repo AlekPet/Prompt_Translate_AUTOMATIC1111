@@ -6,7 +6,7 @@ and then translate it into English for better results and not resort to translat
 # Instalation
 1. Go to the extension in the webui tab
 2. Click on the "Instrall from URL tab"
-3. Past link to github https://github.com/AlekPet/prompt_translate from field "URL for extension's git repository"
+3. Past link to github https://github.com/AlekPet/prompt_translate.git from field "URL for extension's git repository"
 4. And restart webio in settings tab
 
 # Manual instalation
