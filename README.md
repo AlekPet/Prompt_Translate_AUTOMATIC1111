@@ -1,2 +1,28 @@
-# prompt_translate
-Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
+# Prompt translate
+'Prompt translate' script for AUTOMATIC1111/stable-diffusion-webui translate prompt.
+This script allows you to write a query in promt query in your native language,
+and then translate it into English for better results and not resort to translators.
+
+# Instalation
+1. Go to the extension in the webui tab
+2. Click on the <Instrall from URL> tab
+3. Past link to github from field <URL for extension's git repository>
+4. And restart webio in settings tab
+
+# Manual install
+1. Download the file <prompt_translate.py> from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
+2. Add googletrans==3.1.0a0 to requirements_versions.txt
+
+
+# Manual install - version 2
+1. Download the file <prompt_translate.py> from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
+2. Run virtual enviroment in stable-diffusion folder, run window prompt or other shell commands
+3. Enter this code
+    
+    Windows
+    .\venv\scripts\activate
+    pip install "googletrans==3.1.0a0"
+    
+    Linux
+    source ./venv/bin/activate
+    pip install "googletrans==3.1.0a0"
