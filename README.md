@@ -5,12 +5,12 @@ and then translate it into English for better results and not resort to translat
 
 # Instalation
 1. Go to the extension in the webui tab
-2. Click on the <Instrall from URL> tab
-3. Past link to github from field <URL for extension's git repository>
+2. Click on the "Instrall from URL tab"
+3. Past link to github from field "URL for extension's git repository"
 4. And restart webio in settings tab
 
 # Manual instalation
-1. Download the file <prompt_translate.py> from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
+1. Download the file "prompt_translate.py" from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
 2. Add googletrans==3.1.0a0 to requirements_versions.txt
 
 
