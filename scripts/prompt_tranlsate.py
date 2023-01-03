@@ -34,7 +34,7 @@ class Script(scripts.Script):
         return [tranlate_text.text, tranlate_text.src]
 
     def change_lang(self, src, dest):
-            if src != 'auto':
+            if src != 'auto' and src != dest:
                 return [src, dest]
           
     def after_component(self, component, **kwargs):
@@ -46,15 +46,15 @@ class Script(scripts.Script):
                         with gr.Row():
                             with gr.Column():
                                 gtext = gr.Textbox(label="Text translate", lines=2, value="", placeholder="Google translate text", show_label=False, interactive=True)
-                                gGet =  gr.Button(value="Get prompt")
-                                gtrans = gr.Button(value="Translate")
+                                with gr.Row():
+                                    gGet =  gr.Button(value="Get prompt")
+                                    gtrans = gr.Button(value="Translate")
 
-                            with gr.Row():
-                                with gr.Column():
+                            with gr.Column():
+                                with gr.Row():
                                     srcTrans = gr.Dropdown(['auto']+list(LANGUAGES.keys()), value='auto', label='From', interactive=True)
                                     toTrans = gr.Dropdown(list(LANGUAGES.keys()), value='en', label='To', interactive=True)
-                                with gr.Column():
-                                    change_src_to = gr.Button(value="🔃")
+                                change_src_to = gr.Button(value="🔃")
 
                         gGet.click(self.getprompt, inputs=[component], outputs=[gtext])
                         gtrans.click(self.translate, inputs=[gtext,srcTrans,toTrans], outputs=[component, srcTrans])
