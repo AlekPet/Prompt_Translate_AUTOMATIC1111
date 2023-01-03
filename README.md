@@ -16,7 +16,7 @@ and then translate it into English for better results and not resort to translat
 
 # Manual instalation - version 2
 1. Download the file "prompt_translate.py" from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
-2. Run virtual enviroment in stable-diffusion folder, run window prompt or other shell commands
+2. Run virtual enviroment in stable-diffusion folder, run window console or other bash
 3. Enter this code
     
 Windows
