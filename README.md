@@ -20,11 +20,13 @@ and then translate it into English for better results and not resort to translat
 3. Enter this code
     
 Windows
-    `.\venv\scripts\activate`
-    
-    `pip install "googletrans==3.1.0a0"`
+```
+.\venv\scripts\activate  
+pip install "googletrans==3.1.0a0"
+```
     
 Linux
-    `source ./venv/bin/activate`
-    
-    `pip install "googletrans==3.1.0a0"`
+```
+source ./venv/bin/activate  
+pip install "googletrans==3.1.0a0"
+```
