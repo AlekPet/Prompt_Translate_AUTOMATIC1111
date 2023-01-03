@@ -21,8 +21,10 @@ and then translate it into English for better results and not resort to translat
     
 Windows
     `.\venv\scripts\activate`
+    
     `pip install "googletrans==3.1.0a0"`
     
 Linux
     `source ./venv/bin/activate`
+    
     `pip install "googletrans==3.1.0a0"`
