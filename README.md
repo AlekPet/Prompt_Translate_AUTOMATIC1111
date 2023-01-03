@@ -9,12 +9,12 @@ and then translate it into English for better results and not resort to translat
 3. Past link to github from field <URL for extension's git repository>
 4. And restart webio in settings tab
 
-# Manual install
+# Manual instalation
 1. Download the file <prompt_translate.py> from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
 2. Add googletrans==3.1.0a0 to requirements_versions.txt
 
 
-# Manual install - version 2
+# Manual instalation - version 2
 1. Download the file <prompt_translate.py> from the script githib folder and transfer it to the scripts folder where stable-diffusion is installed.
 2. Run virtual enviroment in stable-diffusion folder, run window prompt or other shell commands
 3. Enter this code
