@@ -3,6 +3,13 @@
 This script allows you to write a query in promt query in your native language,
 and then translate it into English for better results and not resort to translators.
 
+#NOTE
+```
+The text is translated in automatic mode, only the script "Prompt translate"
+at the bottom is selected (without it, the "run" method does not run),
+and so far we have not been able to find a way to update the fields with the translated values from the "run" method :)
+```
+
 # Instalation
 1. Go to the extension in the webui tab
 2. Click on the "Instrall from URL tab"
