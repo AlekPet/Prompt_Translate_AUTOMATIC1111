@@ -3,7 +3,7 @@
 This script allows you to write a query in promt query in your native language,
 and then translate it into English for better results and not resort to translators.
 
-#NOTE
+# NOTE
 ```
 The text is translated in automatic mode, only the script "Prompt translate"
 at the bottom is selected (without it, the "run" method does not run),
