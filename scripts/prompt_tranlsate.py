@@ -1,7 +1,7 @@
 # Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
 # Description: Promt translator into other languages
 # GitHub: https://github.com/AlekPet/prompt_translate
-
+import copy
 import modules.scripts as scripts
 import gradio as gr
 
@@ -19,7 +19,7 @@ class Script(scripts.Script):
     def getprompt(self, value):
         return value
         
-    def translate(self, gtext, srcTrans,toTrans):
+    def translate(self, gtext, srcTrans=None, toTrans=None):
         if not gtext:
             return ''
 
@@ -30,25 +30,59 @@ class Script(scripts.Script):
             toTrans = 'en'
             
         tranlate_text = translator.translate(gtext, src=srcTrans, dest=toTrans)
-
+        
         return [tranlate_text.text, tranlate_text.src]
 
     def change_lang(self, src, dest):
             if src != 'auto' and src != dest:
                 return [src, dest]
-          
+            return ['en','auto']
+
+
+    def process(self, p, *args):
+        print('process')
+        
+    def run(self, p, *args):
+        if p.prompt:
+            p.prompt = self.translate(p.prompt)[0]
+
+
+        if p.negative_prompt:
+            p.negative_prompt = self.translate(p.negative_prompt)[0]
+            self.txt2img_neg_prompt.value = p.negative_prompt
+
+
+    
     def after_component(self, component, **kwargs):
         try:
-
+            
             if isinstance(component, (gr.components.Textbox,)):
-                if kwargs.get('elem_id') == 'txt2img_prompt' or kwargs.get('elem_id') == 'img2img_prompt':
+
+                if kwargs.get('elem_id') == 'txt2img_prompt':
+                    self.txt2img_prompt = component
+                    
+                if kwargs.get('elem_id') == 'txt2img_neg_prompt':
+                    self.txt2img_neg_prompt = component
+
+                if kwargs.get('elem_id') == 'img2img_prompt':
+                    self.img2img_prompt = component
+
+                if kwargs.get('elem_id') == 'img2img_neg_prompt':                    
+                    self.img2img_neg_prompt = component
+
+                    
+                if kwargs.get('elem_id') == 'txt2img_neg_prompt' or kwargs.get('elem_id') == 'img2img_neg_prompt':
+
+                    tab = 0
+                    if kwargs.get('elem_id') == 'img2img_neg_prompt':
+                        tab = 1
+                    
                     with gr.Blocks():
                         with gr.Row():
                             with gr.Column():
-                                gtext = gr.Textbox(label="Text translate", lines=2, value="", placeholder="Google translate text", show_label=False, interactive=True)
                                 with gr.Row():
-                                    gGet =  gr.Button(value="Get prompt")
                                     gtrans = gr.Button(value="Translate")
+                                    gtrans_neg = gr.Button(value="Negative Translate")
 
                             with gr.Column():
                                 with gr.Row():
@@ -56,9 +90,14 @@ class Script(scripts.Script):
                                     toTrans = gr.Dropdown(list(LANGUAGES.keys()), value='en', label='To', interactive=True)
                                 change_src_to = gr.Button(value="🔃")
 
-                        gGet.click(self.getprompt, inputs=[component], outputs=[gtext])
-                        gtrans.click(self.translate, inputs=[gtext,srcTrans,toTrans], outputs=[component, srcTrans])
-                        change_src_to.click(self.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
+                                if tab == 0:
+                                    gtrans.click(self.translate, inputs=[self.txt2img_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, srcTrans])
+                                    gtrans_neg.click(self.translate, inputs=[self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_neg_prompt, srcTrans])
+                                else:
+                                    gtrans.click(self.translate, inputs=[self.img2img_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, srcTrans])
+                                    gtrans_neg.click(self.translate, inputs=[self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_neg_prompt, srcTrans])
+                                
+                                change_src_to.click(self.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
 
         except Exception as e:
             print(e)
