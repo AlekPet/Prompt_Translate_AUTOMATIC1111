@@ -1,15 +1,17 @@
 # Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
 # Description: Promt translator into other languages
 # GitHub: https://github.com/AlekPet/prompt_translate
-import copy
+# Date: 2023-01-22
+import re
 import modules.scripts as scripts
 import gradio as gr
 
-from modules.processing import Processed
+from modules.processing import Processed, process_images
 from modules.shared import opts, cmd_opts, state
 from googletrans import Translator, LANGUAGES
 
 translator = Translator()
+empty_str = re.compile('^\s*$', re.I | re.M)
 
 class Script(scripts.Script):
     
@@ -20,8 +22,8 @@ class Script(scripts.Script):
         return value
         
     def translate(self, gtext, srcTrans=None, toTrans=None):
-        if not gtext:
-            return ''
+        if not gtext or empty_str.match(gtext):
+            return ['',srcTrans]
 
         if not srcTrans:
             srcTrans = 'auto'
@@ -38,20 +40,40 @@ class Script(scripts.Script):
                 return [src, dest]
             return ['en','auto']
 
+    def ui(self, is_img2img):
+        with gr.Box():
+            with gr.Row():
+                gtrans = gr.Button(value="Translate")
+                gtrans_neg = gr.Button(value="Negative Translate")            
 
-    def process(self, p, *args):
-        print('process')
+                srcTrans = gr.Dropdown(['auto']+list(LANGUAGES.keys()), value='auto', label='From', interactive=True)
+                toTrans = gr.Dropdown(list(LANGUAGES.keys()), value='en', label='To', interactive=True)
+                change_src_to = gr.Button(value="🔃")
+            with gr.Row():
+                automate = gr.Checkbox(label='Auto translate "Prompt and Negative prompt" before Generate', value=True)
+
+        if not is_img2img :
+            gtrans.click(self.translate, inputs=[self.txt2img_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, srcTrans])
+            gtrans_neg.click(self.translate, inputs=[self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_neg_prompt, srcTrans])
+        else:
+            gtrans.click(self.translate, inputs=[self.img2img_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, srcTrans])
+            gtrans_neg.click(self.translate, inputs=[self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_neg_prompt, srcTrans])
+    
+        change_src_to.click(self.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
+
+        return [automate]                  
         
-    def run(self, p, *args):
-        if p.prompt:
-            p.prompt = self.translate(p.prompt)[0]
+    def run(self, p, automate):
+        if automate:
+            if p.prompt:
+                p.prompt = self.translate(p.prompt)[0]
 
+            if p.negative_prompt:
+                p.negative_prompt = self.translate(p.negative_prompt)[0]
+                
+        proc = process_images(p)
 
-        if p.negative_prompt:
-            p.negative_prompt = self.translate(p.negative_prompt)[0]
-            self.txt2img_neg_prompt.value = p.negative_prompt
-
-
+        return proc
     
     def after_component(self, component, **kwargs):
         try:
@@ -69,35 +91,6 @@ class Script(scripts.Script):
 
                 if kwargs.get('elem_id') == 'img2img_neg_prompt':                    
                     self.img2img_neg_prompt = component
-
-                    
-                if kwargs.get('elem_id') == 'txt2img_neg_prompt' or kwargs.get('elem_id') == 'img2img_neg_prompt':
-
-                    tab = 0
-                    if kwargs.get('elem_id') == 'img2img_neg_prompt':
-                        tab = 1
-                    
-                    with gr.Blocks():
-                        with gr.Row():
-                            with gr.Column():
-                                with gr.Row():
-                                    gtrans = gr.Button(value="Translate")
-                                    gtrans_neg = gr.Button(value="Negative Translate")
-
-                            with gr.Column():
-                                with gr.Row():
-                                    srcTrans = gr.Dropdown(['auto']+list(LANGUAGES.keys()), value='auto', label='From', interactive=True)
-                                    toTrans = gr.Dropdown(list(LANGUAGES.keys()), value='en', label='To', interactive=True)
-                                change_src_to = gr.Button(value="🔃")
-
-                                if tab == 0:
-                                    gtrans.click(self.translate, inputs=[self.txt2img_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, srcTrans])
-                                    gtrans_neg.click(self.translate, inputs=[self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_neg_prompt, srcTrans])
-                                else:
-                                    gtrans.click(self.translate, inputs=[self.img2img_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, srcTrans])
-                                    gtrans_neg.click(self.translate, inputs=[self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_neg_prompt, srcTrans])
-                                
-                                change_src_to.click(self.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
 
         except Exception as e:
             print(e)
