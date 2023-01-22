@@ -3,6 +3,9 @@
 This script allows you to write a query in promt query in your native language,
 and then translate it into English for better results and not resort to translators.
 
+**The old version of the script that runs with the start of Stable Diffusion is here:**
+https://github.com/AlekPet/prompt_translate/tree/Prompt-translate-(from_start_app)
+
 # NOTE
 ```
 The text is translated in automatic mode, only the script "Prompt translate"
