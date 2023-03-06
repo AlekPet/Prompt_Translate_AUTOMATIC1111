@@ -6,11 +6,11 @@ and then translate it into English for better results and not resort to translat
 **The old version of the script that runs with the start of Stable Diffusion is here:**
 https://github.com/AlekPet/prompt_translate/tree/Prompt-translate-(from_start_app)
 
-# NOTE
+# Use
 ```
-The text is translated in automatic mode, only the script "Prompt translate"
-at the bottom is selected (without it, the "run" method does not run),
-and so far we have not been able to find a way to update the fields with the translated values from the "run" method :)
+1. Cick Enable tranlsate
+2. Select languages from and to (or auto, detect source langauges automatical)
+3. Click 'Generate' or 'Translate' (if you want views tranlsated prompts in all prompts) and after 'Generate'
 ```
 
 # Instalation
