@@ -1,7 +1,7 @@
 # Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
 # Description: Prompt translator into other languages
 # GitHub: https://github.com/AlekPet/prompt_translate
-# Date: 2023-01-30
+# Date: 2023-03-06
 import re
 import modules.scripts as scripts
 import gradio as gr
@@ -16,8 +16,11 @@ empty_str = re.compile('^\s*$', re.I | re.M)
 class Script(scripts.Script):
 
     def title(self):
-        return "Prompt tranlsate"
-
+        return "Prompt Tranlsate"
+    
+    def show(self, is_img2img):
+        return scripts.AlwaysVisible
+    
     def translate(self, prompt, prompt_neg='', srcTrans=None, toTrans=None):
        
         if not srcTrans:
@@ -51,7 +54,11 @@ class Script(scripts.Script):
             return ['en','auto']
         
     def ui(self, is_img2img):          
-        with gr.Box():
+        with gr.Accordion('Prompt Translate', open=False):
+            with gr.Row():
+                enabled = gr.Checkbox(label='Enable translate', value=False)
+                automate = gr.Checkbox(label='Auto translate "Prompt and Negative prompt" before Generate', value=True)
+                
             with gr.Row():
                 gtrans = gr.Button(value="Translate")        
 
@@ -60,7 +67,6 @@ class Script(scripts.Script):
                 change_src_to = gr.Button(value="🔃")
                 
             with gr.Row():
-                automate = gr.Checkbox(label='Auto translate "Prompt and Negative prompt" before Generate', value=True)
                 adv_trans = gr.Checkbox(label='See translated prompts after click Generate', value=False)          
                 
             with gr.Box(visible=False) as viewstrans:
@@ -75,28 +81,51 @@ class Script(scripts.Script):
             return {viewstrans: gr.update(visible=checkbox)}                
                 
         if not is_img2img :
-            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans])            
+            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans])
+            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr,srcTrans])
             self.p_com.click(self.translate, inputs=[self.txt2img_prompt,self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr,p_n_tr,srcTrans])
 
         else:
-            gtrans.click(self.translate, inputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans])           
+            gtrans.click(self.translate, inputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans])
+            gtrans.click(self.translate, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr,srcTrans])
             self.ip_com.click(self.translate, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr,srcTrans])
 
             
         change_src_to.click(self.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
         adv_trans.change(show_viewtrans, inputs=adv_trans, outputs=[viewstrans])        
 
-        return [automate]                  
+        return [automate, enabled]
+
+    def listTransale(self, tlist):
+        result = []
+        for ap in tlist:
+            translate_prompt, translate_neg_prompt, _ = self.translate(ap, '')
+            result.append(translate_prompt)      
+        return result
         
-    def run(self, p, automate):
+    def process(self, p, automate, enabled):
+        if not enabled:
+            return
+
         if automate:
-            
+
             if p.prompt:
-                p.prompt, p.negative_prompt, _ = self.translate(p.prompt,p.negative_prompt)               
+                prompt, negative_prompt, _ = self.translate(p.prompt,p.negative_prompt)
+                setattr(p, 'prompt', prompt)               
+                setattr(p, 'negative_prompt', negative_prompt)
 
-        proc = process_images(p)
+                all_prompts = self.listTransale(getattr(p,'all_prompts',[prompt]))
+                all_negative_prompts = self.listTransale(getattr(p,'all_negative_prompts',[negative_prompt]))
 
-        return proc
+                if not all_prompts:
+                    all_prompts = [prompt]
+
+                if not all_negative_prompts:
+                    all_negative_prompts = [negative_prompt]
+                    
+                setattr(p, 'all_prompts', all_prompts)
+                setattr(p, 'all_negative_prompts', all_negative_prompts) 
+
     
     def after_component(self, component, **kwargs):
         try:               
