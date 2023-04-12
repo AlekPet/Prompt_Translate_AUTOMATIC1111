@@ -1,16 +1,15 @@
 # Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
 # Description: Prompt translator into other languages
 # GitHub: https://github.com/AlekPet/prompt_translate
-# Date: 2023-03-06
+# Date: 2023-04-12
 import re
 import modules.scripts as scripts
 import gradio as gr
 
 from modules.processing import Processed, process_images
 from modules.shared import opts, cmd_opts, state
-from googletrans import Translator, LANGUAGES
+from deep_translator import GoogleTranslator
 
-translator = Translator()
 empty_str = re.compile('^\s*$', re.I | re.M)
 
 class Script(scripts.Script):
@@ -21,8 +20,7 @@ class Script(scripts.Script):
     def show(self, is_img2img):
         return scripts.AlwaysVisible
     
-    def translate(self, prompt, prompt_neg='', srcTrans=None, toTrans=None):
-       
+    def translate(self, prompt, prompt_neg='', srcTrans="auto", toTrans="en"):
         if not srcTrans:
             srcTrans = 'auto'
             
@@ -31,21 +29,14 @@ class Script(scripts.Script):
 
         tranlate_text_prompt = ''
         if prompt and not empty_str.match(prompt):
-            tranlate_text_prompt = vars(translator.translate(prompt, src=srcTrans, dest=toTrans))
+            tranlate_text_prompt = GoogleTranslator(source=srcTrans, target=toTrans).translate(prompt) 
 
         tranlate_text_prompt_neg = ''
         if prompt_neg and not empty_str.match(prompt_neg):
-            tranlate_text_prompt_neg = vars(translator.translate(prompt_neg, src=srcTrans, dest=toTrans))
+            tranlate_text_prompt_neg = GoogleTranslator(source=srcTrans, target=toTrans).translate(prompt_neg) 
 
-
-        _src = srcTrans
-        if 'src' in tranlate_text_prompt:
-           _src = tranlate_text_prompt.get('src', srcTrans)
-           
-        elif 'src' in tranlate_text_prompt_neg:
-            _src = tranlate_text_prompt_neg.get('src', srcTrans)
         
-        return [tranlate_text_prompt.get('text', '') if 'text' in tranlate_text_prompt else '', tranlate_text_prompt_neg.get('text', '') if 'text' in tranlate_text_prompt_neg else '', _src]
+        return [tranlate_text_prompt, tranlate_text_prompt_neg]
        
 
     def change_lang(self, src, dest):
@@ -62,8 +53,8 @@ class Script(scripts.Script):
             with gr.Row():
                 gtrans = gr.Button(value="Translate")        
 
-                srcTrans = gr.Dropdown(['auto']+list(LANGUAGES.keys()), value='auto', label='From', interactive=True)
-                toTrans = gr.Dropdown(list(LANGUAGES.keys()), value='en', label='To', interactive=True)
+                srcTrans = gr.Dropdown(['auto','ru','en'], value='auto', label='From', interactive=True)
+                toTrans = gr.Dropdown(['en','ru'], value='en', label='To', interactive=True)
                 change_src_to = gr.Button(value="🔃")
                 
             with gr.Row():
@@ -81,14 +72,14 @@ class Script(scripts.Script):
             return {viewstrans: gr.update(visible=checkbox)}                
                 
         if not is_img2img :
-            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans])
-            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr,srcTrans])
-            self.p_com.click(self.translate, inputs=[self.txt2img_prompt,self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr,p_n_tr,srcTrans])
+            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt])
+            gtrans.click(self.translate, inputs=[self.txt2img_prompt, self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr])
+            self.p_com.click(self.translate, inputs=[self.txt2img_prompt,self.txt2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr,p_n_tr])
 
         else:
-            gtrans.click(self.translate, inputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans])
-            gtrans.click(self.translate, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr,srcTrans])
-            self.ip_com.click(self.translate, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr,srcTrans])
+            gtrans.click(self.translate, inputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans, toTrans], outputs=[self.img2img_prompt, self.img2img_neg_prompt])
+            gtrans.click(self.translate, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr])
+            self.ip_com.click(self.translate, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr])
 
             
         change_src_to.click(self.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
@@ -99,7 +90,7 @@ class Script(scripts.Script):
     def listTransale(self, tlist):
         result = []
         for ap in tlist:
-            translate_prompt, translate_neg_prompt, _ = self.translate(ap, '')
+            translate_prompt, translate_neg_prompt = self.translate(ap, '')
             result.append(translate_prompt)      
         return result
         
@@ -110,7 +101,7 @@ class Script(scripts.Script):
         if automate:
 
             if p.prompt:
-                prompt, negative_prompt, _ = self.translate(p.prompt,p.negative_prompt)
+                prompt, negative_prompt = self.translate(p.prompt,p.negative_prompt)
                 setattr(p, 'prompt', prompt)               
                 setattr(p, 'negative_prompt', negative_prompt)
 
@@ -124,33 +115,30 @@ class Script(scripts.Script):
                     all_negative_prompts = [negative_prompt]
                     
                 setattr(p, 'all_prompts', all_prompts)
-                setattr(p, 'all_negative_prompts', all_negative_prompts) 
+                setattr(p, 'all_negative_prompts', all_negative_prompts)
+                print(getattr(p, 'all_prompts'))
 
     
-    def after_component(self, component, **kwargs):
-        try:               
-            if isinstance(component, (gr.components.Textbox,)):
+    def after_component(self, component, **kwargs):           
+        if isinstance(component, (gr.components.Textbox,)):
 
-                if kwargs.get('elem_id') == 'txt2img_prompt':
-                    self.txt2img_prompt = component
-                    
-                if kwargs.get('elem_id') == 'txt2img_neg_prompt':
-                    self.txt2img_neg_prompt = component
+            if kwargs.get('elem_id') == 'txt2img_prompt':
+                self.txt2img_prompt = component
+                
+            if kwargs.get('elem_id') == 'txt2img_neg_prompt':
+                self.txt2img_neg_prompt = component
 
-                if kwargs.get('elem_id') == 'img2img_prompt':
-                    self.img2img_prompt = component
+            if kwargs.get('elem_id') == 'img2img_prompt':
+                self.img2img_prompt = component
 
-                if kwargs.get('elem_id') == 'img2img_neg_prompt':                    
-                    self.img2img_neg_prompt = component
+            if kwargs.get('elem_id') == 'img2img_neg_prompt':                    
+                self.img2img_neg_prompt = component
 
-            if isinstance(component, (gr.components.Button,)):
-                if kwargs.get('elem_id') == 'txt2img_generate':
-                    self.p_kw = kwargs
-                    self.p_com = component
-                    
-                if kwargs.get('elem_id') == 'img2img_generate':
-                    self.ip_kw = kwargs
-                    self.ip_com = component
-
-        except Exception as e:
-            print(e)
+        if isinstance(component, (gr.components.Button,)):
+            if kwargs.get('elem_id') == 'txt2img_generate':
+                self.p_kw = kwargs
+                self.p_com = component
+                
+            if kwargs.get('elem_id') == 'img2img_generate':
+                self.ip_kw = kwargs
+                self.ip_com = component
