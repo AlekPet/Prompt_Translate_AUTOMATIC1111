@@ -116,7 +116,6 @@ class Script(scripts.Script):
                     
                 setattr(p, 'all_prompts', all_prompts)
                 setattr(p, 'all_negative_prompts', all_negative_prompts)
-                print(getattr(p, 'all_prompts'))
 
     
     def after_component(self, component, **kwargs):           
