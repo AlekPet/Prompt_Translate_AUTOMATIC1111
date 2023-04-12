@@ -11,7 +11,7 @@ https://github.com/AlekPet/prompt_translate/tree/Prompt-translate-(from_start_ap
 
 I am used other library named is __"deep_translator"__
 
-To debug you need to delete the **env** folder in the root of stable-diffusion-webui and then re-run **webui-user.bat** or **webui-user.sh** (Linux) otherwise you will not see the generated images at the input. After go to install instructions. :)
+To debug you need to delete the **env** folder in the root of stable-diffusion-webui and then re-run **webui-user.bat** or **webui-user.sh** (Linux) otherwise you will not see the generated images at the output. After go to install instructions. :)
 
 
 # Use
