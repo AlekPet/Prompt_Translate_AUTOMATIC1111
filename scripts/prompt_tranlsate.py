@@ -44,7 +44,10 @@ class Script(scripts.Script):
                 return [src, dest]
             return ['en','auto']
         
-    def ui(self, is_img2img):          
+    def ui(self, is_img2img):
+        langs_sup = GoogleTranslator().get_supported_languages(as_dict=True)
+        langs_sup = list(langs_sup.values())
+        
         with gr.Accordion('Prompt Translate', open=False):
             with gr.Row():
                 enabled = gr.Checkbox(label='Enable translate', value=False)
@@ -53,8 +56,8 @@ class Script(scripts.Script):
             with gr.Row():
                 gtrans = gr.Button(value="Translate")        
 
-                srcTrans = gr.Dropdown(['auto','ru','en'], value='auto', label='From', interactive=True)
-                toTrans = gr.Dropdown(['en','ru'], value='en', label='To', interactive=True)
+                srcTrans = gr.Dropdown(['auto']+langs_sup, value='auto', label='From', interactive=True)
+                toTrans = gr.Dropdown(langs_sup, value='en', label='To', interactive=True)
                 change_src_to = gr.Button(value="🔃")
                 
             with gr.Row():
