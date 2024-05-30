@@ -37,7 +37,7 @@ class Script(scripts.Script):
             self.ip_com.click(promptTranslate.translateByClick, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr])
 
             
-        change_src_to.click(promptTranslate.change_lang, inputs=[srcTrans,toTrans], outputs=[toTrans,srcTrans])
+        change_src_to.click(promptTranslate.change_lang, inputs=[srcTrans,toTrans], outputs=[srcTrans, toTrans])
         adv_trans.change(lambda x: gr.update(visible=x), inputs=adv_trans, outputs=viewstrans)
 
         translate_proxy_enabled.change(lambda x: gr.update(visible=x), inputs=translate_proxy_enabled, outputs=proxy_settings, queue=False, show_progress=False)      

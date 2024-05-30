@@ -483,16 +483,18 @@ class PromptTranslate:
     
     def createElements(self):
         with gr.Blocks() as dom:
-            with gr.Row(elem_classes='translate_row'):
-                params = self.makeRequiredFields()
-                from_translate = params.get("from_translate")
-                to_translate = params.get("to_translate")
-                services = params.get("service")
+            params = self.makeRequiredFields()
+            from_translate = params.get("from_translate")
+            to_translate = params.get("to_translate")
+            services = params.get("service")
 
-                param_tranlsate_proxyes = params.get("proxies")
-                param_tranlsate_auth_data = params.get("auth_data")  
-                param_tranlsate_settings = params.get("settings")
-                
+            param_tranlsate_proxyes = params.get("proxies")
+            param_tranlsate_auth_data = params.get("auth_data")  
+            param_tranlsate_settings = params.get("settings")
+
+            auth_input_in_node = param_tranlsate_settings.get("auth_input_in_node", False)
+            proxyes_input_in_node = param_tranlsate_settings.get("proxyes_input_in_node", False)
+
             with gr.Accordion('Prompt Translate', open=False):
                 with gr.Row():
                     translate_enabled = gr.Checkbox(label='Enable translate', value=False, elem_id='translate_enabled_el')
@@ -521,10 +523,10 @@ class PromptTranslate:
 
 
                 # Proxy and authorization
-                with gr.Accordion('Proxy & Authorization data', open=False):
+                with gr.Accordion('Proxy & Authorization data', open=auth_input_in_node):
                     # Proxy
                     with gr.Row():
-                        translate_proxy_enabled = gr.Checkbox(label='Enable proxy', value=param_tranlsate_settings["proxyes_input_in_node"], elem_id='translate_proxy_enable')
+                        translate_proxy_enabled = gr.Checkbox(label='Enable proxy', value=proxyes_input_in_node, elem_id='translate_proxy_enable')
 
                     with gr.Box(visible=translate_proxy_enabled.value, label="") as proxy_settings:
                         gr.Markdown('Proxy settings')
