@@ -88,9 +88,9 @@
       "https": ""
     },
     "settings": {
-      "__comment": "Properties 'auth_input_in_node' and 'proxyes_input_in_node' add input fields in nodes. Property 'show_services_no_check_api' show services if property 'show_service=true' and not check property api_key and other...",
-      "auth_input_in_node": false,
-      "proxyes_input_in_node": false,
+      "__comment": "Properties 'auth_and_proxy_view' and 'proxyes_default_enabled' add input fields in nodes. Property 'show_services_no_check_api' show services if property 'show_service=true' and not check property api_key and other...",
+      "auth_and_proxy_view": false,
+      "proxyes_default_enabled": false,
       "show_services_no_check_api": false,
       "help_text_services": true
     }

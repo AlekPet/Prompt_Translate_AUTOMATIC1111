@@ -31,18 +31,17 @@ class Script(scripts.Script):
         if not is_img2img :
             gtrans.click(promptTranslate.translateByClick, inputs=[srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.txt2img_prompt, self.txt2img_neg_prompt], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt, p_tr, p_n_tr])
             self.p_com.click(promptTranslate.translateByClick, inputs=[srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.txt2img_prompt, self.txt2img_neg_prompt], outputs=[p_tr,p_n_tr])
-
         else:
             gtrans.click(promptTranslate.translateByClick, inputs=[srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.img2img_prompt, self.img2img_neg_prompt], outputs=[self.img2img_prompt, self.img2img_neg_prompt, p_tr, p_n_tr])
             self.ip_com.click(promptTranslate.translateByClick, inputs=[self.img2img_prompt,self.img2img_neg_prompt, srcTrans, toTrans], outputs=[p_tr, p_n_tr])
-
             
         change_src_to.click(promptTranslate.change_lang, inputs=[srcTrans,toTrans], outputs=[srcTrans, toTrans])
         adv_trans.change(lambda x: gr.update(visible=x), inputs=adv_trans, outputs=viewstrans)
 
-        translate_proxy_enabled.change(lambda x: gr.update(visible=x), inputs=translate_proxy_enabled, outputs=proxy_settings, queue=False, show_progress=False)      
+        translate_proxy_enabled.change(lambda x: gr.update(visible=x), inputs=translate_proxy_enabled, outputs=proxy_settings, queue=False, show_progress=False) 
 
-        return [translate_enabled, translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data]
+
+        return [translate_enabled, translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, adv_trans]
     
 
     def listTransale(self, tlist, translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data):
@@ -53,7 +52,7 @@ class Script(scripts.Script):
         return result
 
    
-    def process(self, p, translate_enabled, translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data):
+    def process(self, p, translate_enabled, translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, adv_trans):
         if not translate_enabled:
             return
 
@@ -61,6 +60,7 @@ class Script(scripts.Script):
             prompt, negative_prompt = promptTranslate.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, p.prompt, p.negative_prompt)
             setattr(p, 'prompt', prompt)               
             setattr(p, 'negative_prompt', negative_prompt)
+
 
             all_prompts = self.listTransale(getattr(p,'all_prompts',[prompt]), translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data)
             all_negative_prompts = self.listTransale(getattr(p,'all_negative_prompts',[negative_prompt]), translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data)
@@ -71,8 +71,10 @@ class Script(scripts.Script):
             if not all_negative_prompts:
                 all_negative_prompts = [negative_prompt]
                 
-            setattr(p, 'all_prompts', all_prompts)
-            setattr(p, 'all_negative_prompts', all_negative_prompts)
+            setattr(p, 'all_prompts', [all_prompts])
+            setattr(p, 'all_negative_prompts', [all_negative_prompts])
+
+        return
 
     
     def after_component(self, component, **kwargs):           

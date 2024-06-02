@@ -177,7 +177,8 @@ class PromptTranslate:
 
     def translateByClick(self, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt):
         pos, neg = self.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt)
-        return [pos, neg, pos, neg]        
+        
+        return [pos, neg]*2       
 
 
     def selectService(self, service):
@@ -216,8 +217,8 @@ class PromptTranslate:
 
     def langs_support_func(self, service):   
         settings = {
-            "auth_input_in_node": CONFIG_SETTINGS.get("auth_input_in_node", False),
-            "proxyes_input_in_node": CONFIG_SETTINGS.get("proxyes_input_in_node", False)
+            "auth_and_proxy_view": CONFIG_SETTINGS.get("auth_and_proxy_view", False),
+            "proxyes_default_enabled": CONFIG_SETTINGS.get("proxyes_default_enabled", False)
         }
         
         proxies = {k.lower():p for k, p in CONFIG_PROXYES.items() if k.lower() in ("http", "https") and check_proxy_reg.search(p)}
@@ -492,8 +493,8 @@ class PromptTranslate:
             param_tranlsate_auth_data = params.get("auth_data")  
             param_tranlsate_settings = params.get("settings")
 
-            auth_input_in_node = param_tranlsate_settings.get("auth_input_in_node", False)
-            proxyes_input_in_node = param_tranlsate_settings.get("proxyes_input_in_node", False)
+            auth_and_proxy_view = param_tranlsate_settings.get("auth_and_proxy_view", False)
+            proxyes_default_enabled = param_tranlsate_settings.get("proxyes_default_enabled", False)
 
             with gr.Accordion('Prompt Translate', open=False):
                 with gr.Row():
@@ -523,10 +524,10 @@ class PromptTranslate:
 
 
                 # Proxy and authorization
-                with gr.Accordion('Proxy & Authorization data', open=auth_input_in_node):
+                with gr.Accordion('Proxy & Authorization data', open=auth_and_proxy_view):
                     # Proxy
                     with gr.Row():
-                        translate_proxy_enabled = gr.Checkbox(label='Enable proxy', value=proxyes_input_in_node, elem_id='translate_proxy_enable')
+                        translate_proxy_enabled = gr.Checkbox(label='Enable proxy', value=proxyes_default_enabled, elem_id='translate_proxy_enable')
 
                     with gr.Box(visible=translate_proxy_enabled.value, label="") as proxy_settings:
                         gr.Markdown('Proxy settings')
