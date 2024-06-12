@@ -1,4 +1,4 @@
-# Prompt translate
+# Prompt translate (version 2024.06.12)
 
 'Prompt translate' script for AUTOMATIC1111/stable-diffusion-webui translate prompt.
 This script allows you to write a query in promt query in your native language,

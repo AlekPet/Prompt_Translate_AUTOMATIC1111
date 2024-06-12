@@ -1,7 +1,7 @@
 # Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
 # Description: Prompt translator into other languages
 # GitHub: https://github.com/AlekPet/Prompt_Translate_AUTOMATIC1111
-# Date: 2024.05.30
+# Date: 2024.06.12
 import re
 import modules.scripts as scripts
 import gradio as gr
