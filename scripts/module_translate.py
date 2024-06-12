@@ -34,6 +34,15 @@ check_proxy_reg = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+')
 # Debug mode
 DEBUG = False
 
+
+# Class colors
+class DeepColors:
+    RED = '\33[91m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    CLEAR = '\033[0m'
+
+
 ### =====  Deep Translator Nodes  ===== ###
 
 def log(*text,desc="[Deep Translator => "):
@@ -95,7 +104,7 @@ def check_service_view(services_prop={}, service=""):
 
 # Load config.js file
 if not os.path.exists(config_path):
-    print("File config.js file not found! Reinstall extensions! Used default settings!")
+    print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} File config.js file not found! Reinstall extensions! Used default settings!")
 else:
     with open(config_path, "r") as f:
         CONFIG = json.load(f)
@@ -157,7 +166,7 @@ def makeDictText(name_prop, text="", regexp = key_val_reg):
                     
         log(f'Value {name_prop}: {data[name_prop]}')
     except Exception as e:
-        print(f'[Deep Translator] Error {name_prop} exception: ', e)  
+        print(f'{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Error {name_prop} exception: ', e)  
     finally:
         return data
 
@@ -167,12 +176,13 @@ class PromptTranslate:
         self.current_service = serviceDefault
         self.langs_support = self.langs_support_func(serviceDefault)
         self.translated_prompts = ["",""]
+        print(f"{DeepColors.GREEN}>>> Deep Translator extension installed <<<{DeepColors.CLEAR}")
 
     def change_lang(self, src, dest):
             if src != 'auto' and src != dest:
                 return [dest, src]
             else:
-                gr.Warning(f"It is impossible to change the language from '{src}' to '{dest}' because one of the languages is selected 'auto' or both languages are the same!")
+                gr.Warning(f"[Deep Translator] It is impossible to change the language from '{src}' to '{dest}' because one of the languages is selected 'auto' or both languages are the same!")
                 return [src, dest]    
 
     def translateByClick(self, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt):
@@ -276,7 +286,7 @@ class PromptTranslate:
                 try:
                     translated = PonsTranslator(source=from_translate, target=to_translate, proxies=proxyes).translate_words(words) 
                 except Exception as err:
-                    print(f"[Deep Translator] Service \"{service}\", it gives an error if words from other languages that do not correspond to the source are used : {err}")
+                    print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Service \"{service}\", it gives an error if words from other languages that do not correspond to the source are used : {err}")
                 
         # LibreTranslator    
         elif service == "LibreTranslator":
@@ -365,7 +375,7 @@ class PromptTranslate:
                         gr.Warning(f"[Deep Translator] The selected language '{detect_lang_full}' is not supported by the service '{service}'!")
             
         except Exception as e:
-            print(f"[Deep Translator] Error detect language: {e}") 
+            print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Error detect language: {e}") 
             gr.Warning(f"[Deep Translator] Error detect language: {e}")
         
         
@@ -381,7 +391,7 @@ class PromptTranslate:
             }
             try:
                 if text:          
-                    print(f"[Deep Translator] Service: \"{service}\"")                
+                    print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Service: \"{service}\"")                
                     # Proxy prop        
                     if add_proxies == True:
                         if isinstance(proxies, (str,)) and proxies.strip() != "":
@@ -390,7 +400,7 @@ class PromptTranslate:
                         elif proxies is None:
                             prop_data.update({"proxies":{k.lower():p  for k, p in CONFIG_PROXYES.items() if k.lower() in ("http", "https") and check_proxy_reg.search(p)}})
                     else:
-                        print("[Deep Translator] Proxy disabled or input field is empty!")
+                        print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Proxy disabled or input field is empty!")
 
                     # Auth prop
                     if auth_data is None:
@@ -400,7 +410,7 @@ class PromptTranslate:
                         prop_data.update(makeDictText("auth_data", auth_data))
                         
                     else:
-                        print("[Deep Translator] Authorization input field is empty!")
+                        print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Authorization input field is empty!")
                         
                     # Detect language
                     tServices = ("DeeplTranslator", "QcriTranslator", "LingueeTranslator", "PonsTranslator", "PapagoTranslator", "BaiduTranslator", "MyMemoryTranslator")
@@ -409,7 +419,7 @@ class PromptTranslate:
                         from_translate, is_support, detect = self.isset_languages(text, service, from_translate, lang_support, prop_data)                       
                         log(f"Detect turple: {(from_translate, is_support, detect)}")
                     else:
-                        print(f"Deep Translator] Service detect language disabled! Services support: {', '.join(tServices)}.\nThe selected service has its own way of detecting the language.\nProperty \"detect_lang_api_key\" in Authorization data is empty or incorrect!")
+                        print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Service detect language disabled! Services support: {', '.join(tServices)}.\nThe selected service has its own way of detecting the language.\nProperty \"detect_lang_api_key\" in Authorization data is empty or incorrect!")
                             
                     log(f"[{service}] => Data: {prop_data}")
                     
@@ -418,21 +428,21 @@ class PromptTranslate:
                     
                     if not text_tranlsated or text_tranlsated is None:
                         text_tranlsated = text
-                        print("[Deep Translator] Text translated is None, set source text!")
+                        print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Text translated is None, set source text!")
 
                     elif isinstance(text_tranlsated, (str,)) and text_tranlsated.strip() == "":
                         text_tranlsated = text
-                        print("[Deep Translator] Text translated is empty, set source text!")
+                        print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Text translated is empty, set source text!")
 
                     elif isinstance(text_tranlsated, (tuple, list)):
                         if len(text_tranlsated):
                             text_tranlsated = " ".join(text_tranlsated)
                         else:
-                            print("[Deep Translator] List translated is empty, set source text!")
+                            print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} List translated is empty, set source text!")
                             text_tranlsated = ""
                     
             except Exception as e:
-                print(f"[Deep Translator] Error translate: {e}")
+                print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Error translate: {e}")
                 gr.Warning(f"[Deep Translator] Error translate: {e}")
             
             finally:

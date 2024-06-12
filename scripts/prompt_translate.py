@@ -9,7 +9,7 @@ import gradio as gr
 from modules.processing import Processed, process_images
 from modules.shared import opts, cmd_opts, state
 # from deep_translator import GoogleTranslator
-from scripts.module_translate import PromptTranslate
+from scripts.module_translate import PromptTranslate, DeepColors
 
 promptTranslate = PromptTranslate()
 
@@ -58,21 +58,24 @@ class Script(scripts.Script):
 
         if p.prompt:
             prompt, negative_prompt = promptTranslate.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, p.prompt, p.negative_prompt)
-            setattr(p, 'prompt', prompt)               
-            setattr(p, 'negative_prompt', negative_prompt)
+            setattr(p, 'prompt', [prompt])               
+            setattr(p, 'negative_prompt', [negative_prompt])
 
+            all_prompts = self.listTransale(getattr(p,'all_prompts',[prompt,]), translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data)
+            all_negative_prompts = self.listTransale(getattr(p,'all_negative_prompts',[negative_prompt,]), translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data)
 
-            all_prompts = self.listTransale(getattr(p,'all_prompts',[prompt]), translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data)
-            all_negative_prompts = self.listTransale(getattr(p,'all_negative_prompts',[negative_prompt]), translate_service, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data)
 
             if not all_prompts:
-                all_prompts = [prompt]
+                all_prompts = prompt
 
             if not all_negative_prompts:
-                all_negative_prompts = [negative_prompt]
+                all_negative_prompts = negative_prompt
                 
-            setattr(p, 'all_prompts', [all_prompts])
-            setattr(p, 'all_negative_prompts', [all_negative_prompts])
+            setattr(p, 'all_prompts', all_prompts)
+            setattr(p, 'all_negative_prompts', all_negative_prompts)
+
+            print(f"{DeepColors.YELLOW}[Deep Translator] {DeepColors.GREEN}Positive prompts: {' '.join(all_prompts)}{DeepColors.CLEAR}")
+            print(f"{DeepColors.YELLOW}[Deep Translator] {DeepColors.RED}Negative prompts: {' '.join(all_negative_prompts)}{DeepColors.CLEAR}")
 
         return
 
