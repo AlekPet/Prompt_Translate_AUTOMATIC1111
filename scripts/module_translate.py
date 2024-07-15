@@ -185,10 +185,10 @@ class PromptTranslate:
                 gr.Warning(f"[Deep Translator] It is impossible to change the language from '{src}' to '{dest}' because one of the languages is selected 'auto' or both languages are the same!")
                 return [src, dest]    
 
-    def translateByClick(self, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt):
-        pos, neg = self.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt)
+    def translateByClick(self, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt, returnTree=False):
+        pos, neg, detected_lang = self.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt)
         
-        return [pos, neg]*2       
+        return [pos, neg, detected_lang] if returnTree else [pos, neg, pos, neg, detected_lang]
 
 
     def selectService(self, service):
@@ -446,7 +446,7 @@ class PromptTranslate:
                 gr.Warning(f"[Deep Translator] Error translate: {e}")
             
             finally:
-                return text_tranlsated
+                return text_tranlsated, from_translate
 
 
     def makeRequiredFields(self):
@@ -571,10 +571,10 @@ class PromptTranslate:
         
         # Translate   
         if text_pos.strip() != "":
-            text_tranlsated_pos = self.deep_translator_function(from_translate, to_translate, add_proxies, proxies, auth_data, service, text_pos, self.langs_support)
+            text_tranlsated_pos, detected_lang = self.deep_translator_function(from_translate, to_translate, add_proxies, proxies, auth_data, service, text_pos, self.langs_support)
 
         if text_neg.strip() != "":
-            text_tranlsated_neg = self.deep_translator_function(from_translate, to_translate, add_proxies, proxies, auth_data, service, text_neg, self.langs_support)
+            text_tranlsated_neg, _ = self.deep_translator_function(from_translate, to_translate, add_proxies, proxies, auth_data, service, text_neg, self.langs_support)
 
         if text_tranlsated_pos is None or text_tranlsated_pos == "":
             text_tranlsated_pos = text_pos
@@ -582,6 +582,6 @@ class PromptTranslate:
         if text_tranlsated_neg is None or text_tranlsated_neg == "":
             text_tranlsated_neg = text_neg
 
-        self.translated_prompts = [text_tranlsated_pos, text_tranlsated_neg]
+        self.translated_prompts = [text_tranlsated_pos, text_tranlsated_neg, detected_lang]
 
         return self.translated_prompts
