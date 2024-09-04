@@ -187,7 +187,11 @@ class PromptTranslate:
 
     def translateByClick(self, translate_enabled, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt, returnTree=False):
         if not translate_enabled:
-            return [prompt, negative_prompt, srcTrans] if returnTree else [prompt, negative_prompt, prompt, negative_prompt, srcTrans]
+            if returnTree:
+                return ["", "", srcTrans]
+            else:
+                pos, neg, detected_lang = self.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt)
+                return [pos, neg, pos, neg, detected_lang]
         
         pos, neg, detected_lang = self.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt)
         
@@ -516,7 +520,7 @@ class PromptTranslate:
                 with gr.Row():
                     translate_service = gr.Dropdown(services[0], value=services[1].get("default"), label='Service', interactive=True, elem_classes='translate_services')
 
-                with gr.Box(label=""):
+                with gr.Box():
                     gr.Markdown('Translation settings')
                     with gr.Row(equal_height=True):
                         gtrans = gr.Button(value="Translate")        
@@ -529,9 +533,9 @@ class PromptTranslate:
                 with gr.Row():
                     adv_trans = gr.Checkbox(label='See translated prompts after click Generate', value=False)          
                     
-                with gr.Box(visible=False, label="") as viewstrans:
+                with gr.Box(visible=False) as viewstrans:
                     gr.Markdown('Tranlsated prompt & negative prompt')
-                    with gr.Row(scale=1):
+                    with gr.Row():
                         p_tr = gr.Textbox(label='Prompt translate', show_label=False, value='', lines=3, container=True, placeholder='Translated text prompt')      
                         p_n_tr = gr.Textbox(label='Negative Translate', show_label=False, value='', lines=3, container=True, placeholder='Translated negative text prompt') 
 
@@ -542,7 +546,7 @@ class PromptTranslate:
                     with gr.Row():
                         translate_proxy_enabled = gr.Checkbox(label='Enable proxy', value=proxyes_default_enabled, elem_id='translate_proxy_enable')
 
-                    with gr.Box(visible=translate_proxy_enabled.value, label="") as proxy_settings:
+                    with gr.Box(visible=translate_proxy_enabled.value) as proxy_settings:
                         gr.Markdown('Proxy settings')
                         with gr.Row():
                             translate_proxy = gr.Textbox(label='Proxy', show_label=False, value=param_tranlsate_proxyes["value"], lines=6, interactive=True, container=False, placeholder=param_tranlsate_proxyes['placeholder'])
