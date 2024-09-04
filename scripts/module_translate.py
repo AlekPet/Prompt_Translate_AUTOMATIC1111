@@ -569,7 +569,8 @@ class PromptTranslate:
         text_tranlsated_pos = None
         text_tranlsated_neg = None
         
-        # Translate   
+        # Translate
+        detected_lang = from_translate 
         if text_pos.strip() != "":
             text_tranlsated_pos, detected_lang = self.deep_translator_function(from_translate, to_translate, add_proxies, proxies, auth_data, service, text_pos, self.langs_support)
 
