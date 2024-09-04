@@ -28,11 +28,11 @@ class Script(scripts.Script):
         translate_service.change(promptTranslate.setComboBoxesSrcTo, inputs=translate_service, outputs=[srcTrans, toTrans, translate_proxy, translate_auth_data])
                 
         if not is_img2img :
-            gtrans.click(promptTranslate.translateByClick, inputs=[srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.txt2img_prompt, self.txt2img_neg_prompt], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt, p_tr, p_n_tr, srcTrans])
-            self.p_com.click(promptTranslate.translateByClick, inputs=[srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.txt2img_prompt, self.txt2img_neg_prompt, gr.Checkbox(value=True, visible=False)], outputs=[p_tr, p_n_tr, srcTrans])
+            gtrans.click(promptTranslate.translateByClick, inputs=[translate_enabled, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.txt2img_prompt, self.txt2img_neg_prompt], outputs=[self.txt2img_prompt, self.txt2img_neg_prompt, p_tr, p_n_tr, srcTrans])
+            self.p_com.click(promptTranslate.translateByClick, inputs=[translate_enabled,srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.txt2img_prompt, self.txt2img_neg_prompt, gr.Checkbox(value=True, visible=False)], outputs=[p_tr, p_n_tr, srcTrans])
         else:
-            gtrans.click(promptTranslate.translateByClick, inputs=[srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.img2img_prompt, self.img2img_neg_prompt], outputs=[self.img2img_prompt, self.img2img_neg_prompt, p_tr, p_n_tr, srcTrans])
-            self.ip_com.click(promptTranslate.translateByClick, inputs=[self.img2img_prompt, self.img2img_neg_prompt, srcTrans, toTrans, gr.Checkbox(value=True, visible=False)], outputs=[p_tr, p_n_tr, srcTrans])
+            gtrans.click(promptTranslate.translateByClick, inputs=[translate_enabled, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, self.img2img_prompt, self.img2img_neg_prompt], outputs=[self.img2img_prompt, self.img2img_neg_prompt, p_tr, p_n_tr, srcTrans])
+            self.ip_com.click(promptTranslate.translateByClick, inputs=[translate_enabled, self.img2img_prompt, self.img2img_neg_prompt, srcTrans, toTrans, gr.Checkbox(value=True, visible=False)], outputs=[p_tr, p_n_tr, srcTrans])
             
         change_src_to.click(promptTranslate.change_lang, inputs=[srcTrans,toTrans], outputs=[srcTrans, toTrans])
         adv_trans.change(lambda x: gr.update(visible=x), inputs=adv_trans, outputs=viewstrans)

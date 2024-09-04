@@ -185,7 +185,10 @@ class PromptTranslate:
                 gr.Warning(f"[Deep Translator] It is impossible to change the language from '{src}' to '{dest}' because one of the languages is selected 'auto' or both languages are the same!")
                 return [src, dest]    
 
-    def translateByClick(self, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt, returnTree=False):
+    def translateByClick(self, translate_enabled, srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt, returnTree=False):
+        if not translate_enabled:
+            return [prompt, negative_prompt, srcTrans] if returnTree else [prompt, negative_prompt, prompt, negative_prompt, srcTrans]
+        
         pos, neg, detected_lang = self.deep_translate_text(srcTrans, toTrans, translate_proxy_enabled, translate_proxy, translate_auth_data, translate_service, prompt, negative_prompt)
         
         return [pos, neg, detected_lang] if returnTree else [pos, neg, pos, neg, detected_lang]
