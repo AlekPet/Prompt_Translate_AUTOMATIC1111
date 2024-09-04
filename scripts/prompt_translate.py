@@ -1,4 +1,4 @@
-# Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui
+# Title: Prompt translate script for AUTOMATIC1111/stable-diffusion-webui and stable-diffusion-webui-forge
 # Description: Prompt translator into other languages
 # GitHub: https://github.com/AlekPet/Prompt_Translate_AUTOMATIC1111
 # Date: 2024.07.27

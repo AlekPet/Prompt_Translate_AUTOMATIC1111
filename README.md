@@ -1,6 +1,6 @@
-# Prompt translate (version 2024.06.12)
+# Prompt translate -> AUTOMATIC1111 and stable-diffusion-webui-Forge (version 2024.09.04)
 
-'Prompt translate' script for AUTOMATIC1111/stable-diffusion-webui translate prompt.
+'Prompt translate' script for AUTOMATIC1111/stable-diffusion-webui (and https://github.com/lllyasviel/stable-diffusion-webui-forge) translate prompt.
 This script allows you to write a query in promt query in your native language,
 and then translate it into English for better results and not resort to translators.
 

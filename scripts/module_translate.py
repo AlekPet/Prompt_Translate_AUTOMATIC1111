@@ -1,5 +1,5 @@
 ## --- Title: Prompt translate (Deep-trasnlator)
-## --- Description: Extension for AUTOMATIC1111, translated prompt to other languages
+## --- Description: Extension for AUTOMATIC1111 and stable-diffusion-webui-forge, translated prompt to other languages
 ## --- Author: AlekPet (https://github.com/AlekPet/Prompt_Translate_AUTOMATIC1111)
 
 import gradio as gr
