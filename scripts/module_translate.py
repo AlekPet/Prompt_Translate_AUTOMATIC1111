@@ -27,7 +27,7 @@ from deep_translator import (BaiduTranslator,
 empty_str = re.compile('^\s*$', re.I | re.M)
 remove_brackets_reg = re.compile("[\[\]]*")
 key_val_reg = re.compile('^[\w-]+=[^=][.\w-]*$', re.I)
-key_val_proxy_reg = re.compile('^[https]+=[^=]((?:\d{1,3}\.){1,3}\d{1,3}):(\d{1,5})$', re.I)
+key_val_proxy_reg = re.compile(r"^https?=\d{1,3}(?:\.\d{1,3}){3}:\d{1,5}$", re.I)
 service_correct_reg = re.compile("\s*\[.*\]")
 check_proxy_reg = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\:\d+')
 
@@ -406,6 +406,9 @@ class PromptTranslate:
                             
                         elif proxies is None:
                             prop_data.update({"proxies":{k.lower():p  for k, p in CONFIG_PROXYES.items() if k.lower() in ("http", "https") and check_proxy_reg.search(p)}})
+
+                        proxies_info = ", ".join([f"{prop}={val}" for prop, val in prop_data["proxies"].items()])
+                        print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Proxy is enabled. {DeepColors.YELLOW}Proxies: {proxies_info}{DeepColors.CLEAR}")
                     else:
                         print(f"{DeepColors.YELLOW}[Deep Translator]{DeepColors.CLEAR} Proxy disabled or input field is empty!")
 
